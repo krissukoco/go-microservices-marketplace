@@ -1,0 +1,54 @@
+definitions:
+  handler.Listing:
+    properties:
+      id:
+        type: integer
+      title:
+        type: string
+    type: object
+  schema.APIResponseOK:
+    properties:
+      data: {}
+      ok:
+        type: boolean
+    type: object
+host: localhost:8000
+info:
+  contact:
+    email: kristianto.sukcoo@gmail.com
+    name: Kris Sukoco
+  description: Gateway API for the Marketplace microservices
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Marketplace Rest API
+  version: 0.0.1
+paths:
+  /:
+    get:
+      consumes:
+      - '*/*'
+      description: get the status of server.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns Listing
+          schema:
+            allOf:
+            - $ref: '#/definitions/schema.APIResponseOK'
+            - properties:
+                data:
+                  $ref: '#/definitions/handler.Listing'
+              type: object
+      security:
+      - ApiKey: []
+      summary: Show the status of server.
+      tags:
+      - Listing
+securityDefinitions:
+  APIKey:
+    in: header
+    name: x-api-key
+    type: apiKey
+swagger: "2.0"

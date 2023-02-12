@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option go_package = "../auth";
+package auth;
+
+message LoginRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+    bool success = 1;
+    string token = 2;
+    string email = 3;
+    string first_name = 4;
+    string last_name = 5;
+}
+
+message RefreshRequest {
+    string token = 1;
+}
+
+message RefreshResponse {
+    bool success = 1;
+    string email = 2;
+    string first_name = 3;
+    string last_name = 4;
+}
+
+service AuthService {
+    rpc Login (LoginRequest) returns (LoginResponse) {}
+    rpc Refresh (RefreshRequest) returns (RefreshResponse) {}
+}
+
