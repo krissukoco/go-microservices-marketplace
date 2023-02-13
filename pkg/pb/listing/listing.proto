@@ -37,6 +37,6 @@ service ListingService {
     rpc Create(NewListing) returns (NewListingResponse) {}
     rpc Get(ListingId) returns (Listing) {}
     rpc Update(ListingId) returns (Listing) {}
-    rpc Delete(Listing) returns (Listing) {}
+    rpc Delete(ListingId) returns (ListingId) {}
 }
 

@@ -19,8 +19,9 @@ const (
 	ResourceForbidden int64 = 30003
 	ResourceNotFound  int64 = 30004
 	// 40000 - 49999: Request Validations
-	BadRequest     int64 = 40000
-	UnparsableBody int64 = 42000
+	BadRequest        int64 = 40000
+	PasswordMalformed int64 = 40001
+	UnparsableBody    int64 = 42000
 	// 90000 - 99999: Server Errors
 	ServerError        int64 = 90000
 	ServiceUnavailable int64 = 90003

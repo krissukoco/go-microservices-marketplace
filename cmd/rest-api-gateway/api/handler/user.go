@@ -40,8 +40,10 @@ func UpdatePassword(c *fiber.Ctx) error {
 	if err != nil {
 		return response.APIErrorFromCode(c, statuscode.ServerError)
 	}
-	if !res.Success {
-		return response.APIErrorFromCode(c, statuscode.BadRequest)
+	if res.Status != statuscode.OK {
+		return response.APIErrorFromCode(c, res.Status)
 	}
-	return response.APIOkWithData(c, body)
+	return response.APIOkWithData(c, map[string]string{
+		"message": "Password changed successfully",
+	})
 }

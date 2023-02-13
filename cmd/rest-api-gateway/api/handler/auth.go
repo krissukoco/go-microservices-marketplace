@@ -95,6 +95,7 @@ func AuthRefresh(c *fiber.Ctx) error {
 		return response.APIErrorFromCode(c, res.Status)
 	}
 	return response.APIOkWithData(c, map[string]interface{}{
+		"id":         res.Id,
 		"email":      res.Email,
 		"first_name": res.FirstName,
 		"last_name":  res.LastName,
