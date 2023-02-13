@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/api/schema"
+	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/api/response"
 	"github.com/krissukoco/go-microservices-marketplace/internal/statuscode"
 	"github.com/krissukoco/go-microservices-marketplace/pkg/pb/auth"
 	"google.golang.org/grpc"
@@ -37,13 +37,13 @@ type RegisterRequest struct {
 func Login(c *fiber.Ctx) error {
 	var body LoginRequest
 	if err := c.BodyParser(&body); err != nil {
-		return c.Status(422).JSON(schema.UnparsableBodyError())
+		return response.APIErrorFromCode(c, statuscode.UnparsableBody)
 	}
 	// Call User microservice to verify user
 	conn, err := grpc.Dial("localhost:11000", grpc.WithInsecure())
 	if err != nil {
 		log.Println("ERROR connecting to User microservice: ", err)
-		return APIErrorFromCode(c, statuscode.ServiceUnavailable)
+		return response.APIErrorFromCode(c, statuscode.ServiceUnavailable)
 	}
 	defer conn.Close()
 	client := auth.NewAuthServiceClient(conn)
@@ -53,12 +53,12 @@ func Login(c *fiber.Ctx) error {
 	})
 	if err != nil {
 		log.Println("ERROR: ", err)
-		return APIErrorFromCode(c, statuscode.ServerUnknown)
+		return response.APIErrorFromCode(c, statuscode.ServerError)
 	}
 	if !res.Success {
-		return APIErrorFromCode(c, statuscode.EmailOrPasswordInvalid)
+		return response.APIErrorFromCode(c, statuscode.EmailOrPasswordInvalid)
 	}
-	return APIOkWithData(c, map[string]interface{}{
+	return response.APIOkWithData(c, map[string]interface{}{
 		"token":      res.Token,
 		"email":      res.Email,
 		"first_name": res.FirstName,
@@ -69,50 +69,42 @@ func Login(c *fiber.Ctx) error {
 func AuthRefresh(c *fiber.Ctx) error {
 	token := c.Get("Authorization", "")
 	if token == "" {
-		return APIErrorFromCode(c, statuscode.TokenMissing)
+		return response.APIErrorFromCode(c, statuscode.TokenMissing)
 	}
 	split := strings.Split(token, " ")
 	if len(split) != 2 {
-		return APIErrorFromCode(c, statuscode.TokenMalformed)
+		return response.APIErrorFromCode(c, statuscode.TokenMalformed)
 	}
 	token = split[1]
 	// Call User microservice to verify user
 	conn, err := grpc.Dial("localhost:11000", grpc.WithInsecure())
 	if err != nil {
-		return c.Status(503).JSON(schema.NewErrorResponse(
-			schema.ErrorServiceUnavailable,
-			"Internal Server Error",
-		))
+		log.Println("ERROR connecting to User microservice: ", err)
+		return response.APIErrorFromCode(c, statuscode.ServerError)
 	}
 	defer conn.Close()
 
 	client := auth.NewAuthServiceClient(conn)
 	res, err := client.Refresh(context.Background(), &auth.RefreshRequest{Token: token})
 	if err != nil {
-		log.Println("ERROR: ", err)
-		return c.Status(500).JSON(schema.NewErrorResponse(
-			schema.ErrorInternal,
-			"Internal Server Error",
-		))
+		log.Println("ERROR refresh auth service: ", err)
+		return response.APIErrorFromCode(c, statuscode.ServerError)
 	}
 	if !res.Success {
-		return c.Status(401).JSON(schema.NewErrorResponse(
-			schema.ErrorTokenInvalid,
-			"Token expired or invalid",
-		))
+		return response.APIErrorFromCode(c, statuscode.TokenInvalid)
 	}
-	return c.Status(200).JSON(schema.NewSuccessResponse(map[string]interface{}{
+	return response.APIOkWithData(c, map[string]interface{}{
 		"email":      res.Email,
 		"first_name": res.FirstName,
 		"last_name":  res.LastName,
-	}))
+	})
 }
 
 func Register(c *fiber.Ctx) error {
 	var body RegisterRequest
 	if err := c.BodyParser(&body); err != nil {
-		return c.Status(422).JSON(schema.UnparsableBodyError())
+		return response.APIErrorFromCode(c, statuscode.UnparsableBody)
 	}
 	// TODO: Call User microservice to register user
-	return c.Status(200).JSON(schema.NewSuccessResponse(&body))
+	return response.APIOkWithData(c, &body)
 }

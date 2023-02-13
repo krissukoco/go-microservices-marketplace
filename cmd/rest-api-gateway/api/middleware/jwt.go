@@ -5,7 +5,8 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/api/schema"
+	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/api/response"
+	"github.com/krissukoco/go-microservices-marketplace/internal/statuscode"
 	"github.com/krissukoco/go-microservices-marketplace/pkg/pb/auth"
 	"google.golang.org/grpc"
 )
@@ -13,31 +14,19 @@ import (
 func RequireJWT(c *fiber.Ctx) error {
 	authToken := c.Get("Authorization", "")
 	if authToken == "" {
-		return c.Status(401).JSON(schema.NewErrorResponse(
-			schema.ErrorTokenMissing,
-			"Token is missing",
-		))
+		return response.APIErrorFromCode(c, statuscode.TokenMissing)
 	}
 	if !strings.HasPrefix(authToken, "Bearer ") {
-		return c.Status(401).JSON(schema.NewErrorResponse(
-			schema.ErrorTokenMalformed,
-			"Token is not of Bearer type",
-		))
+		return response.APIErrorFromCode(c, statuscode.TokenMalformed)
 	}
 	bearer := strings.TrimPrefix(authToken, "Bearer ")
 	if bearer == "" {
-		return c.Status(401).JSON(schema.NewErrorResponse(
-			schema.ErrorTokenMalformed,
-			"Token is malformed",
-		))
+		return response.APIErrorFromCode(c, statuscode.TokenMalformed)
 	}
 	// Validate JWT to user microservice
 	conn, err := grpc.Dial("localhost:11000", grpc.WithInsecure())
 	if err != nil {
-		return c.Status(503).JSON(schema.NewErrorResponse(
-			schema.ErrorServiceUnavailable,
-			"Internal Server Error",
-		))
+		return response.APIErrorFromCode(c, statuscode.ServiceUnavailable)
 	}
 	defer conn.Close()
 
@@ -46,16 +35,10 @@ func RequireJWT(c *fiber.Ctx) error {
 		Token: bearer,
 	})
 	if err != nil {
-		return c.Status(500).JSON(schema.NewErrorResponse(
-			schema.ErrorInternal,
-			"Internal Server Error",
-		))
+		return response.APIErrorFromCode(c, statuscode.ServerError)
 	}
 	if !res.Success {
-		return c.Status(401).JSON(schema.NewErrorResponse(
-			schema.ErrorTokenInvalid,
-			"Token is invalid",
-		))
+		return response.APIErrorFromCode(c, statuscode.TokenInvalid)
 	}
 	// TODO: Get user ID instead
 	c.Locals("userId", res.Email)

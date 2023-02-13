@@ -21,6 +21,11 @@ func UseDefault(app *fiber.App) {
 	auth.Post("/login", handler.Login)
 	auth.Post("/refresh", handler.AuthRefresh)
 
+	// User
+	user := v1.Group("/user")
+	user.Use(middleware.RequireJWT)
+	user.Patch("/password", handler.UpdatePassword)
+
 	// Products
 	products := v1.Group("/products")
 	products.Get("/", handler.GetAllListing)

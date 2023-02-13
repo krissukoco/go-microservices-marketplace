@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/api/schema"
+	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/api/response"
 )
 
 // Listing listing
@@ -22,8 +22,8 @@ type Listing struct {
 // @Security ApiKey
 // @Router /products [get]
 func GetAllListing(c *fiber.Ctx) error {
-	return c.Status(200).JSON(schema.NewSuccessResponse(&Listing{
+	return response.APIOkWithData(c, &Listing{
 		ID:    1,
 		Title: "Listing 1",
-	}))
+	})
 }

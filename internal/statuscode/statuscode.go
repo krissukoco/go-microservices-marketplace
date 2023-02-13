@@ -21,7 +21,7 @@ const (
 	// 40000 - 49999: Request Validations
 	UnparsableBody int = 40000
 	// 90000 - 99999: Server Errors
-	ServerUnknown      int = 90000
+	ServerError        int = 90000
 	ServiceUnavailable int = 90003
 )
 
@@ -33,7 +33,7 @@ var HTTPCodeMap = map[int][]int{
 	404: {ResourceNotFound},
 	422: {UnparsableBody},
 	429: {TooManyRequests},
-	500: {ServerUnknown},
+	500: {ServerError},
 	503: {ServiceUnavailable},
 }
 
@@ -78,7 +78,7 @@ func Message(code int) string {
 		return "Resource is not found"
 	case UnparsableBody:
 		return "Unparsable body"
-	case ServerUnknown:
+	case ServerError:
 		return "Internal server error"
 	case ServiceUnavailable:
 		return "Service is unavailable"
