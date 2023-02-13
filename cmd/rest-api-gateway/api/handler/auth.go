@@ -56,8 +56,8 @@ func Login(c *fiber.Ctx) error {
 		log.Println("ERROR: ", err)
 		return response.APIErrorFromCode(c, statuscode.ServerError)
 	}
-	if !res.Success {
-		return response.APIErrorFromCode(c, statuscode.EmailOrPasswordInvalid)
+	if res.Status != statuscode.OK {
+		return response.APIErrorFromCode(c, res.Status)
 	}
 	return response.APIOkWithData(c, map[string]interface{}{
 		"token":      res.Token,
@@ -91,8 +91,8 @@ func AuthRefresh(c *fiber.Ctx) error {
 		log.Println("ERROR refresh auth service: ", err)
 		return response.APIErrorFromCode(c, statuscode.ServerError)
 	}
-	if !res.Success {
-		return response.APIErrorFromCode(c, statuscode.TokenInvalid)
+	if res.Status != statuscode.OK {
+		return response.APIErrorFromCode(c, res.Status)
 	}
 	return response.APIOkWithData(c, map[string]interface{}{
 		"email":      res.Email,

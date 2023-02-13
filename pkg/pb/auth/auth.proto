@@ -9,7 +9,7 @@ message LoginRequest {
 }
 
 message LoginResponse {
-    bool success = 1;
+    int64 status = 1;
     string token = 2;
     string id = 3;
     string email = 4;
@@ -22,7 +22,7 @@ message RefreshRequest {
 }
 
 message RefreshResponse {
-    bool success = 1;
+    int64 status = 1;
     string id = 2;
     string email = 3;
     string first_name = 4;

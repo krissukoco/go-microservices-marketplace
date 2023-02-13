@@ -7,7 +7,7 @@ import (
 
 type APIResponseError struct {
 	OK      bool   `json:"ok"`
-	Code    int    `json:"code"`
+	Code    int64  `json:"code"`
 	Message string `json:"message"`
 }
 
@@ -23,7 +23,7 @@ func NewSuccessResponse(data interface{}) *APIResponseOK {
 	}
 }
 
-func NewErrorResponse(code int, msg string) *APIResponseError {
+func NewErrorResponse(code int64, msg string) *APIResponseError {
 	return &APIResponseError{
 		OK:      false,
 		Code:    code,
@@ -38,7 +38,7 @@ func APIOkWithData(c *fiber.Ctx, data interface{}) error {
 	})
 }
 
-func APIErrorFromCode(c *fiber.Ctx, code int) error {
+func APIErrorFromCode(c *fiber.Ctx, code int64) error {
 	// TODO: include params
 	msg := statuscode.Message(code)
 	httpCode := statuscode.HTTP(code)

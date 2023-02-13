@@ -3,30 +3,30 @@ package statuscode
 //  Codes consists of 5-digit non-negative integers
 
 const (
-	OK int = 0
+	OK int64 = 0
 	// 10000 - 19999: User & Auth Related
-	Unauthorized           int = 10001
-	Forbidden              int = 10002
-	TokenGeneral           int = 10010
-	TokenMissing           int = 10011
-	TokenMalformed         int = 10012
-	TokenExpired           int = 10013
-	TokenInvalid           int = 10014
-	EmailOrPasswordInvalid int = 10021
-	TooManyRequests        int = 19001
+	Unauthorized           int64 = 10001
+	Forbidden              int64 = 10002
+	TokenGeneral           int64 = 10010
+	TokenMissing           int64 = 10011
+	TokenMalformed         int64 = 10012
+	TokenExpired           int64 = 10013
+	TokenInvalid           int64 = 10014
+	EmailOrPasswordInvalid int64 = 10021
+	TooManyRequests        int64 = 19001
 	// 30000 - 39999: Resource Related
-	ResourceGeneral   int = 30000
-	ResourceForbidden int = 30003
-	ResourceNotFound  int = 30004
+	ResourceGeneral   int64 = 30000
+	ResourceForbidden int64 = 30003
+	ResourceNotFound  int64 = 30004
 	// 40000 - 49999: Request Validations
-	BadRequest     int = 40000
-	UnparsableBody int = 42000
+	BadRequest     int64 = 40000
+	UnparsableBody int64 = 42000
 	// 90000 - 99999: Server Errors
-	ServerError        int = 90000
-	ServiceUnavailable int = 90003
+	ServerError        int64 = 90000
+	ServiceUnavailable int64 = 90003
 )
 
-var HTTPCodeMap = map[int][]int{
+var HTTPCodeMap = map[int][]int64{
 	200: {OK},
 	400: {BadRequest, EmailOrPasswordInvalid},
 	401: {Unauthorized, TokenGeneral, TokenMissing, TokenMalformed, TokenExpired, TokenInvalid},
@@ -38,7 +38,7 @@ var HTTPCodeMap = map[int][]int{
 	503: {ServiceUnavailable},
 }
 
-func HTTP(code int) int {
+func HTTP(code int64) int {
 	for k, v := range HTTPCodeMap {
 		for _, c := range v {
 			if c == code {
@@ -49,7 +49,7 @@ func HTTP(code int) int {
 	return 400
 }
 
-func Message(code int) string {
+func Message(code int64) string {
 	switch code {
 	case OK:
 		return "OK"

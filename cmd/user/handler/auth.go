@@ -5,11 +5,12 @@ import (
 	"log"
 
 	"github.com/krissukoco/go-microservices-marketplace/cmd/user/model"
+	"github.com/krissukoco/go-microservices-marketplace/internal/statuscode"
 	"github.com/krissukoco/go-microservices-marketplace/pkg/pb/auth"
 )
 
 func (s *Server) Login(ctx context.Context, r *auth.LoginRequest) (*auth.LoginResponse, error) {
-	res := &auth.LoginResponse{Success: false}
+	res := &auth.LoginResponse{Status: statuscode.TokenInvalid}
 	var u model.User
 	if err := u.FindByEmail(r.Email); err != nil {
 		if err.Error() == "user not found" {
@@ -23,7 +24,7 @@ func (s *Server) Login(ctx context.Context, r *auth.LoginRequest) (*auth.LoginRe
 	if err := u.ComparePassword(r.Password); err != nil {
 		return res, nil
 	}
-	res.Success = true
+	res.Status = statuscode.OK
 	// Generate JWT Token
 	token, err := u.GenerateJWT()
 	if err != nil {
@@ -38,7 +39,7 @@ func (s *Server) Login(ctx context.Context, r *auth.LoginRequest) (*auth.LoginRe
 }
 
 func (s *Server) Refresh(ctx context.Context, r *auth.RefreshRequest) (*auth.RefreshResponse, error) {
-	res := &auth.RefreshResponse{Success: false}
+	res := &auth.RefreshResponse{Status: statuscode.TokenInvalid}
 	var u model.User
 	err := u.FromJWT(r.Token)
 	if err != nil {
@@ -48,6 +49,6 @@ func (s *Server) Refresh(ctx context.Context, r *auth.RefreshRequest) (*auth.Ref
 	res.Email = u.Email
 	res.FirstName = u.FirstName
 	res.LastName = u.LastName
-	res.Success = true
+	res.Status = statuscode.OK
 	return res, nil
 }

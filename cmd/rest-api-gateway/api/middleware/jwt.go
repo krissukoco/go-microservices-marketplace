@@ -38,8 +38,8 @@ func RequireJWT(c *fiber.Ctx) error {
 	if err != nil {
 		return response.APIErrorFromCode(c, statuscode.ServerError)
 	}
-	if !res.Success {
-		return response.APIErrorFromCode(c, statuscode.TokenInvalid)
+	if res.Status != statuscode.OK {
+		return response.APIErrorFromCode(c, res.Status)
 	}
 	// TODO: Get user ID instead
 	c.Locals("userId", res.Email)
