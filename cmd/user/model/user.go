@@ -119,6 +119,15 @@ func (u *User) ComparePassword(password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 }
 
+func (u *User) ChangePassword(password string) error {
+	hashedPwd, err := bcrypt.GenerateFromPassword([]byte(password), 7)
+	if err != nil {
+		return err
+	}
+	u.Password = string(hashedPwd)
+	return nil
+}
+
 func (u *User) GenerateJWT() (string, error) {
 	n := time.Now()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{

@@ -5,12 +5,13 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/config"
 	chatPb "github.com/krissukoco/go-microservices-marketplace/pkg/pb/chat"
 	"google.golang.org/grpc"
 )
 
 func TestGRPC(c *fiber.Ctx) error {
-	conn, err := grpc.Dial("localhost:10000", grpc.WithInsecure())
+	conn, err := grpc.Dial(config.Api.UserServiceUrl, grpc.WithInsecure())
 	if err != nil {
 		return c.SendStatus(500)
 	}

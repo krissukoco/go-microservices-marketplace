@@ -7,6 +7,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/api/response"
+	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/config"
 	"github.com/krissukoco/go-microservices-marketplace/internal/statuscode"
 	"github.com/krissukoco/go-microservices-marketplace/pkg/pb/auth"
 	"google.golang.org/grpc"
@@ -40,7 +41,7 @@ func Login(c *fiber.Ctx) error {
 		return response.APIErrorFromCode(c, statuscode.UnparsableBody)
 	}
 	// Call User microservice to verify user
-	conn, err := grpc.Dial("localhost:11000", grpc.WithInsecure())
+	conn, err := grpc.Dial(config.Api.UserServiceUrl, grpc.WithInsecure())
 	if err != nil {
 		log.Println("ERROR connecting to User microservice: ", err)
 		return response.APIErrorFromCode(c, statuscode.ServiceUnavailable)
@@ -77,7 +78,7 @@ func AuthRefresh(c *fiber.Ctx) error {
 	}
 	token = split[1]
 	// Call User microservice to verify user
-	conn, err := grpc.Dial("localhost:11000", grpc.WithInsecure())
+	conn, err := grpc.Dial(config.Api.UserServiceUrl, grpc.WithInsecure())
 	if err != nil {
 		log.Println("ERROR connecting to User microservice: ", err)
 		return response.APIErrorFromCode(c, statuscode.ServerError)

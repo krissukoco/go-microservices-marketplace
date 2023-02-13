@@ -19,7 +19,8 @@ const (
 	ResourceForbidden int = 30003
 	ResourceNotFound  int = 30004
 	// 40000 - 49999: Request Validations
-	UnparsableBody int = 40000
+	BadRequest     int = 40000
+	UnparsableBody int = 42000
 	// 90000 - 99999: Server Errors
 	ServerError        int = 90000
 	ServiceUnavailable int = 90003
@@ -27,7 +28,7 @@ const (
 
 var HTTPCodeMap = map[int][]int{
 	200: {OK},
-	400: {EmailOrPasswordInvalid},
+	400: {BadRequest, EmailOrPasswordInvalid},
 	401: {Unauthorized, TokenGeneral, TokenMissing, TokenMalformed, TokenExpired, TokenInvalid},
 	403: {Forbidden, ResourceForbidden},
 	404: {ResourceNotFound},

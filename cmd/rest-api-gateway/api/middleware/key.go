@@ -5,6 +5,8 @@ import (
 	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/config"
 )
 
+// x-api-key header middleware
+// limit access to only clients with the correct api key, such as web app.
 func CheckApiKeyHeader(c *fiber.Ctx) error {
 	if c.Method() == "OPTIONS" || c.Path() == "/docs/*" {
 		return c.Next()

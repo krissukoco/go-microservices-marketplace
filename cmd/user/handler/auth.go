@@ -8,12 +8,6 @@ import (
 	"github.com/krissukoco/go-microservices-marketplace/pkg/pb/auth"
 )
 
-type Server struct {
-	auth.UnimplementedAuthServiceServer
-}
-
-var _ auth.AuthServiceServer = (*Server)(nil)
-
 func (s *Server) Login(ctx context.Context, r *auth.LoginRequest) (*auth.LoginResponse, error) {
 	res := &auth.LoginResponse{Success: false}
 	var u model.User

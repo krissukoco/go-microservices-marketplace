@@ -6,6 +6,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/api/response"
+	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/config"
 	"github.com/krissukoco/go-microservices-marketplace/internal/statuscode"
 	"github.com/krissukoco/go-microservices-marketplace/pkg/pb/auth"
 	"google.golang.org/grpc"
@@ -24,7 +25,7 @@ func RequireJWT(c *fiber.Ctx) error {
 		return response.APIErrorFromCode(c, statuscode.TokenMalformed)
 	}
 	// Validate JWT to user microservice
-	conn, err := grpc.Dial("localhost:11000", grpc.WithInsecure())
+	conn, err := grpc.Dial(config.Api.UserServiceUrl, grpc.WithInsecure())
 	if err != nil {
 		return response.APIErrorFromCode(c, statuscode.ServiceUnavailable)
 	}
