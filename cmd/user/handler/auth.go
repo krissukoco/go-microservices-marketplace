@@ -31,6 +31,7 @@ func (s *Server) Login(ctx context.Context, r *auth.LoginRequest) (*auth.LoginRe
 		return res, err
 	}
 	res.Token = token
+	res.Id = u.ID
 	res.Email = u.Email
 	res.FirstName = u.FirstName
 	res.LastName = u.LastName
@@ -46,6 +47,7 @@ func (s *Server) Refresh(ctx context.Context, r *auth.RefreshRequest) (*auth.Ref
 		log.Println("ERROR getting user from JWT: ", err)
 		return res, nil // Prevent internal error being returned
 	}
+	res.Id = u.ID
 	res.Email = u.Email
 	res.FirstName = u.FirstName
 	res.LastName = u.LastName

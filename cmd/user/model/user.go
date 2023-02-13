@@ -42,6 +42,7 @@ func (u *User) GetFullName() string {
 }
 
 func (u *User) FindByID(id string) error {
+	exists := false
 	rows, err := database.PG.Query("SELECT * FROM users WHERE id = $1 LIMIT 1", id)
 	if err != nil {
 		log.Println("ERROR on query: ", err)
@@ -54,6 +55,10 @@ func (u *User) FindByID(id string) error {
 		if err != nil {
 			return err
 		}
+		exists = true
+	}
+	if !exists {
+		return errors.New("user not found")
 	}
 
 	return nil
