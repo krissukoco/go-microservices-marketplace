@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"context"
-	"log"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -42,7 +41,7 @@ func RequireJWT(c *fiber.Ctx) error {
 	if res.Status != statuscode.OK {
 		return response.APIErrorFromCode(c, res.Status)
 	}
-	log.Println("User ID: ", res.Id)
+	// log.Println("User ID: ", res.Id)
 	c.Locals("userId", res.Id)
 
 	return c.Next()
