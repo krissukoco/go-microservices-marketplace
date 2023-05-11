@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/krissukoco/go-microservices-marketplace/pkg/pb/chat"
+	"github.com/krissukoco/go-microservices-marketplace/internal/pb/chat"
 )
 
 type Server struct {

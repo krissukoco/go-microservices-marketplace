@@ -6,7 +6,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/config"
-	chatPb "github.com/krissukoco/go-microservices-marketplace/pkg/pb/chat"
+	chatPb "github.com/krissukoco/go-microservices-marketplace/internal/pb/chat"
 	"google.golang.org/grpc"
 )
 

@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/krissukoco/go-microservices-marketplace/cmd/user/model"
+	"github.com/krissukoco/go-microservices-marketplace/internal/pb/auth"
 	"github.com/krissukoco/go-microservices-marketplace/internal/statuscode"
-	"github.com/krissukoco/go-microservices-marketplace/pkg/pb/auth"
 )
 
 func (s *Server) ChangePassword(ctx context.Context, req *auth.ChangePasswordRequest) (*auth.ChangePasswordResponse, error) {
