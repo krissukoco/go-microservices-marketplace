@@ -9,7 +9,7 @@ import (
 	"github.com/krissukoco/go-microservices-marketplace/cmd/user/handler"
 	"google.golang.org/grpc"
 
-	"github.com/krissukoco/go-microservices-marketplace/internal/pb/auth"
+	"github.com/krissukoco/go-microservices-marketplace/internal/proto/auth"
 )
 
 func init() {

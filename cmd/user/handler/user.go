@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/krissukoco/go-microservices-marketplace/cmd/user/model"
-	"github.com/krissukoco/go-microservices-marketplace/internal/pb/auth"
+	"github.com/krissukoco/go-microservices-marketplace/internal/proto/auth"
 	"github.com/krissukoco/go-microservices-marketplace/internal/statuscode"
 )
 
