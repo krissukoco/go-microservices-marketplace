@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/krissukoco/go-microservices-marketplace/cmd/chat/handler"
-	chatPb "github.com/krissukoco/go-microservices-marketplace/internal/proto/chat"
+	chatPb "github.com/krissukoco/go-microservices-marketplace/proto/chat"
 	"google.golang.org/grpc"
 )
 

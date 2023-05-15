@@ -10,12 +10,6 @@ func UseDefault(app *fiber.App) {
 	// @Security ApiKey
 	v1 := app.Group("/api/v1")
 
-	v1.Use(middleware.CheckApiKeyHeader)
-
-	// Tests
-	tests := v1.Group("/tests")
-	tests.Get("/grpc", handler.TestGRPC)
-
 	// Auth
 	auth := v1.Group("/auth")
 	auth.Post("/login", handler.Login)

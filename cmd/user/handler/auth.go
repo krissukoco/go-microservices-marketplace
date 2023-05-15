@@ -5,52 +5,48 @@ import (
 	"log"
 
 	"github.com/krissukoco/go-microservices-marketplace/cmd/user/model"
-	"github.com/krissukoco/go-microservices-marketplace/internal/proto/auth"
-	"github.com/krissukoco/go-microservices-marketplace/internal/statuscode"
+	"github.com/krissukoco/go-microservices-marketplace/proto/auth"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
-func (s *Server) Login(ctx context.Context, r *auth.LoginRequest) (*auth.LoginResponse, error) {
-	res := &auth.LoginResponse{Status: statuscode.TokenInvalid}
+func (s *Server) Login(ctx context.Context, in *auth.LoginRequest) (*auth.LoginResponse, error) {
 	var u model.User
-	if err := u.FindByEmail(r.Email); err != nil {
-		if err.Error() == "user not found" {
-			return res, nil
+	if err := u.FindByEmail(s.Pg, in.Email); err != nil {
+		if err == model.ErrUserNotFound || u.Email != in.Email {
+			return nil, status.Error(codes.NotFound, "Email or password is invalid")
 		}
-		return res, err
+		return nil, status.Error(codes.Internal, "Internal server error")
 	}
-	if u.Email != r.Email {
-		return res, nil
+	if err := u.ComparePassword(in.Password); err != nil {
+		return nil, status.Error(codes.NotFound, "Email or password is invalid")
 	}
-	if err := u.ComparePassword(r.Password); err != nil {
-		return res, nil
-	}
-	res.Status = statuscode.OK
 	// Generate JWT Token
-	token, err := u.GenerateJWT()
+	token, err := u.GenerateJWT(s.JwtSecret)
 	if err != nil {
-		return res, err
+		return nil, status.Error(codes.Internal, "Internal server error")
 	}
-	res.Token = token
-	res.Id = u.ID
-	res.Email = u.Email
-	res.FirstName = u.FirstName
-	res.LastName = u.LastName
 
-	return res, nil
+	return &auth.LoginResponse{
+		Token:     token,
+		Id:        u.ID,
+		Email:     u.Email,
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+	}, nil
 }
 
 func (s *Server) Refresh(ctx context.Context, r *auth.RefreshRequest) (*auth.RefreshResponse, error) {
-	res := &auth.RefreshResponse{Status: statuscode.TokenInvalid}
 	var u model.User
-	err := u.FromJWT(r.Token)
+	err := u.FromJWT(s.Pg, r.Token, s.JwtSecret)
 	if err != nil {
 		log.Println("ERROR getting user from JWT: ", err)
-		return res, nil // Prevent internal error being returned
+		return nil, status.Error(codes.Unauthenticated, "Token is invalid")
 	}
-	res.Id = u.ID
-	res.Email = u.Email
-	res.FirstName = u.FirstName
-	res.LastName = u.LastName
-	res.Status = statuscode.OK
-	return res, nil
+	return &auth.RefreshResponse{
+		Id:        u.ID,
+		Email:     u.Email,
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+	}, nil
 }

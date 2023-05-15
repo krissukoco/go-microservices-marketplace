@@ -7,8 +7,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/api/response"
 	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/config"
-	"github.com/krissukoco/go-microservices-marketplace/internal/proto/auth"
 	"github.com/krissukoco/go-microservices-marketplace/internal/statuscode"
+	"github.com/krissukoco/go-microservices-marketplace/proto/auth"
 	"google.golang.org/grpc"
 )
 

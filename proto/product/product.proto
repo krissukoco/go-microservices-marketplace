@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+option go_package = "github.com/krissukoco/go-microservices-marketplace/proto/product";
+package product;
+
+message Product {
+    string id = 1;
+    string userId = 2;
+    string title = 3;
+    string description = 4;
+    string price = 5;
+    string category = 6;
+    bool second = 7;
+    int64 createdAt = 8;
+    int64 updatedAt = 9;
+}
+
+message ProductId {
+    string id = 1;
+}
+
+message NewProduct {
+    string userId = 1;
+    string title = 2;
+    string description = 3;
+    string price = 4;
+    string category = 5;
+    bool second = 6;
+}
+
+message NewProductResponse {
+    int64 status = 1;
+    Product Product = 2;
+}
+
+service ProductService {
+    rpc Create(NewProduct) returns (NewProductResponse) {}
+    rpc Get(ProductId) returns (Product) {}
+    rpc Update(ProductId) returns (Product) {}
+    rpc Delete(ProductId) returns (ProductId) {}
+}
+

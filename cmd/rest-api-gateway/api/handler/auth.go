@@ -8,8 +8,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/api/response"
 	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/config"
-	"github.com/krissukoco/go-microservices-marketplace/internal/proto/auth"
 	"github.com/krissukoco/go-microservices-marketplace/internal/statuscode"
+	"github.com/krissukoco/go-microservices-marketplace/proto/auth"
 	"google.golang.org/grpc"
 )
 
@@ -33,7 +33,6 @@ type RegisterRequest struct {
 // @Accept */*
 // @Produce json
 // @Success 200 {object} schema.APIResponseOK "User and Token"
-// @Security ApiKey
 // @Router /auth/login [get]
 func Login(c *fiber.Ctx) error {
 	var body LoginRequest

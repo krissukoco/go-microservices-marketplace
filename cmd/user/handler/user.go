@@ -5,15 +5,15 @@ import (
 	"log"
 
 	"github.com/krissukoco/go-microservices-marketplace/cmd/user/model"
-	"github.com/krissukoco/go-microservices-marketplace/internal/proto/auth"
 	"github.com/krissukoco/go-microservices-marketplace/internal/statuscode"
+	"github.com/krissukoco/go-microservices-marketplace/proto/auth"
 )
 
 func (s *Server) ChangePassword(ctx context.Context, req *auth.ChangePasswordRequest) (*auth.ChangePasswordResponse, error) {
 	res := &auth.ChangePasswordResponse{Status: statuscode.Unauthorized}
 	var u model.User
 	log.Println("User ID: ", req.Id)
-	err := u.FindByID(req.Id)
+	err := u.FindByID(s.Pg, req.Id)
 	if err != nil {
 		log.Println("ERROR getting user by ID ", err)
 		res.Status = statuscode.TokenInvalid
@@ -30,7 +30,7 @@ func (s *Server) ChangePassword(ctx context.Context, req *auth.ChangePasswordReq
 		res.Status = statuscode.PasswordMalformed
 		return res, err
 	}
-	err = u.Save()
+	err = u.Save(s.Pg)
 	if err != nil {
 		return res, err
 	}

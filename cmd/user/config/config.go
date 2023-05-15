@@ -13,9 +13,9 @@ type Config struct {
 var Cfg *Config
 
 func InitializeConfigs() {
-	pgConn, ok := os.LookupEnv("POSTGRES_CONNECTION_STRING")
+	pgConn, ok := os.LookupEnv("POSTGRES_URI")
 	if !ok {
-		log.Fatal("ERROR env var POSTGRES_CONNECTION_STRING not set")
+		log.Fatal("ERROR env var POSTGRES_URI not set")
 	}
 	jwtSecret, ok := os.LookupEnv("JWT_SECRET")
 	if !ok {

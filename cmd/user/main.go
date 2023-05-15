@@ -5,20 +5,26 @@ import (
 	"net"
 
 	"github.com/krissukoco/go-microservices-marketplace/cmd/user/config"
-	"github.com/krissukoco/go-microservices-marketplace/cmd/user/database"
 	"github.com/krissukoco/go-microservices-marketplace/cmd/user/handler"
 	"google.golang.org/grpc"
 
-	"github.com/krissukoco/go-microservices-marketplace/internal/proto/auth"
+	authPb "github.com/krissukoco/go-microservices-marketplace/proto/auth"
 )
+
+var Server *handler.Server
 
 func init() {
 	config.InitializeConfigs()
-	database.InitializePostgres()
+	// database.InitializePostgres()
+	srv, err := handler.NewServer()
+	if err != nil {
+		log.Fatal("ERROR initializing server: ", err)
+	}
+	Server = srv
 }
 
 func registerServices(server *grpc.Server) {
-	auth.RegisterAuthServiceServer(server, &handler.Server{})
+	authPb.RegisterAuthServiceServer(server, Server)
 }
 
 func main() {
