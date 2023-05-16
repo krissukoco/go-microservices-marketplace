@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/krissukoco/go-microservices-marketplace/cmd/user/config"
 	"github.com/krissukoco/go-microservices-marketplace/cmd/user/database"
+	"github.com/krissukoco/go-microservices-marketplace/cmd/user/model"
 	"github.com/krissukoco/go-microservices-marketplace/proto/auth"
 	"gorm.io/gorm"
 )
@@ -22,5 +23,6 @@ func NewServer() (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
+	database.AutoMigrate(db, &model.User{})
 	return &Server{Pg: db, JwtSecret: config.Cfg.JWTSecret}, nil
 }

@@ -1,32 +1,13 @@
 package database
 
 import (
-	"database/sql"
 	"fmt"
-	"log"
 	"os"
 
 	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-
-	"github.com/krissukoco/go-microservices-marketplace/cmd/user/config"
 )
-
-var PG *sql.DB
-
-func InitializePostgres() {
-	pg, err := sql.Open("postgres", config.Cfg.PostgresConnStr)
-	if err != nil {
-		log.Fatal("ERROR connecting to PostgreSQL: ", err)
-	}
-	PG = pg
-	err = PG.Ping()
-	if err != nil {
-		log.Fatal("ERROR pinging PostgreSQL: ", err)
-	}
-	log.Println("Connected to PostgreSQL")
-}
 
 func errEnvVar(key string) error {
 	return fmt.Errorf("env var %s not set", key)
@@ -60,4 +41,15 @@ func NewPostgresGorm() (*gorm.DB, error) {
 		return nil, err
 	}
 	return db, nil
+}
+
+func AutoMigrate(db *gorm.DB, models ...interface{}) error {
+	var err error
+	for _, model := range models {
+		err = db.AutoMigrate(model)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

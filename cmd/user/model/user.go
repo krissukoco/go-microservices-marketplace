@@ -12,9 +12,10 @@ import (
 )
 
 var (
-	ErrUserNotFound = errors.New("user not found")
-	ErrTokenInvalid = errors.New("token invalid")
-	ErrTokenExpired = errors.New("token expired")
+	ErrUserNotFound         = errors.New("user not found")
+	ErrTokenInvalid         = errors.New("token invalid")
+	ErrTokenExpired         = errors.New("token expired")
+	ErrInvalidSigningMethod = errors.New("invalid signing method")
 )
 
 type User struct {
@@ -23,9 +24,10 @@ type User struct {
 	Password  string
 	FirstName string
 	LastName  string
+	ImageUrl  string
 	City      string
 	Province  string
-	CreatedAt int64 `gorm:"autoCreateTime"`
+	CreatedAt int64 `gorm:"autoCreateTime:milli"`
 	UpdatedAt int64 `gorm:"autoUpdateTime:milli"`
 }
 
@@ -92,7 +94,7 @@ func (u *User) GenerateJWT(secret string) (string, error) {
 func (u *User) FromJWT(db *gorm.DB, jwtString string, jwtSecret string) error {
 	token, err := jwt.Parse(jwtString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("unexpected signing method")
+			return nil, ErrInvalidSigningMethod
 		}
 		return []byte(jwtSecret), nil
 	})
@@ -125,5 +127,18 @@ func (u *User) FromJWT(db *gorm.DB, jwtString string, jwtSecret string) error {
 
 		return nil
 	}
+	// claims, ok := token.Claims.(jwt.StandardClaims)
+	// log.Println("Claims OK? ", ok)
+	// if ok && token.Valid {
+	// 	if time.Now().Unix() > claims.ExpiresAt { // Note: Token `exp` is always in second
+	// 		return ErrTokenExpired
+	// 	}
+	// 	userId := claims.Subject
+	// 	if err := u.FindByID(db, userId); err != nil {
+	// 		return err
+	// 	}
+
+	// 	return nil
+	// }
 	return ErrTokenInvalid
 }

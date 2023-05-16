@@ -38,9 +38,13 @@ func APIOkWithData(c *fiber.Ctx, data interface{}) error {
 	})
 }
 
-func APIErrorFromCode(c *fiber.Ctx, code int64) error {
+func APIErrorFromCode(c *fiber.Ctx, code int64, message ...string) error {
 	// TODO: include params
 	msg := statuscode.Message(code)
+	// Override message
+	if len(message) > 0 {
+		msg = message[0]
+	}
 	httpCode := statuscode.HTTP(code)
 	return c.Status(httpCode).JSON(&APIResponseError{
 		OK:      false,

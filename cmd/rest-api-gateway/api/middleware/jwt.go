@@ -10,6 +10,7 @@ import (
 	"github.com/krissukoco/go-microservices-marketplace/internal/statuscode"
 	"github.com/krissukoco/go-microservices-marketplace/proto/auth"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
 )
 
 func RequireJWT(c *fiber.Ctx) error {
@@ -36,10 +37,12 @@ func RequireJWT(c *fiber.Ctx) error {
 		Token: bearer,
 	})
 	if err != nil {
-		return response.APIErrorFromCode(c, statuscode.ServerError)
-	}
-	if res.Status != statuscode.OK {
-		return response.APIErrorFromCode(c, res.Status)
+		st, ok := status.FromError(err)
+		if ok {
+			return response.APIErrorFromCode(c, 400)
+		}
+		code, msg := statuscode.ParseGrpcErrMsg(st.Message())
+		return response.APIErrorFromCode(c, code, msg)
 	}
 	// log.Println("User ID: ", res.Id)
 	c.Locals("userId", res.Id)

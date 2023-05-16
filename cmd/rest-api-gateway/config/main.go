@@ -4,6 +4,6 @@ import "log"
 
 func InitializeConfigs() {
 	initApiConfig()
-	initDatabaseConfig()
+	// initDatabaseConfig()
 	log.Println("Successfully initialized Configs")
 }

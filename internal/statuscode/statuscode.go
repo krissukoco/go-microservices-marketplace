@@ -1,5 +1,11 @@
 package statuscode
 
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
+
 //  Codes consists of 5-digit non-negative integers
 
 const (
@@ -13,6 +19,7 @@ const (
 	TokenExpired           int64 = 10013
 	TokenInvalid           int64 = 10014
 	EmailOrPasswordInvalid int64 = 10021
+	EmailAlreadyRegistered int64 = 10022
 	TooManyRequests        int64 = 19001
 	// 30000 - 39999: Resource Related
 	ResourceGeneral   int64 = 30000
@@ -22,14 +29,15 @@ const (
 	BadRequest        int64 = 40000
 	PasswordMalformed int64 = 40001
 	UnparsableBody    int64 = 42000
-	// 90000 - 99999: Server Errors
+	// 90000 - 99999: Server & Unknown Errors
 	ServerError        int64 = 90000
 	ServiceUnavailable int64 = 90003
+	UnknownError       int64 = 99999
 )
 
 var HTTPCodeMap = map[int][]int64{
 	200: {OK},
-	400: {BadRequest, EmailOrPasswordInvalid},
+	400: {BadRequest, EmailOrPasswordInvalid, EmailAlreadyRegistered, UnknownError},
 	401: {Unauthorized, TokenGeneral, TokenMissing, TokenMalformed, TokenExpired, TokenInvalid},
 	403: {Forbidden, ResourceForbidden},
 	404: {ResourceNotFound},
@@ -87,4 +95,25 @@ func Message(code int64) string {
 	default:
 		return "Unknown error"
 	}
+}
+
+func ParseGrpcErrMsg(msg string) (int64, string) {
+	fmt.Println("GRPC Message: ", msg)
+	code := UnknownError
+	message := "Unknown error"
+	split := strings.Split(msg, "__")
+	if len(split) != 2 {
+		return code, message
+	}
+	intCode, err := strconv.Atoi(split[0])
+	if err != nil {
+		return code, message
+	}
+	code = int64(intCode)
+	message = split[1]
+	return code, message
+}
+
+func StandardErrorMessage(code int64, message string) string {
+	return fmt.Sprintf("%d__%s", code, message)
 }

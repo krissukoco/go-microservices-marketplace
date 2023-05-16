@@ -11,6 +11,7 @@ import (
 	"github.com/krissukoco/go-microservices-marketplace/internal/statuscode"
 	"github.com/krissukoco/go-microservices-marketplace/proto/auth"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
 )
 
 type LoginRequest struct {
@@ -19,11 +20,12 @@ type LoginRequest struct {
 }
 
 type RegisterRequest struct {
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
-	Location  string `json:"location"`
+	FirstName       string `json:"first_name"`
+	LastName        string `json:"last_name"`
+	Email           string `json:"email"`
+	Password        string `json:"password"`
+	ConfirmPassword string `json:"confirm_password"`
+	Location        string `json:"location"`
 }
 
 // HealthCheck godoc
@@ -54,9 +56,6 @@ func Login(c *fiber.Ctx) error {
 	if err != nil {
 		log.Println("ERROR: ", err)
 		return response.APIErrorFromCode(c, statuscode.ServerError)
-	}
-	if res.Status != statuscode.OK {
-		return response.APIErrorFromCode(c, res.Status)
 	}
 	return response.APIOkWithData(c, map[string]interface{}{
 		"token":      res.Token,
@@ -90,9 +89,6 @@ func AuthRefresh(c *fiber.Ctx) error {
 		log.Println("ERROR refresh auth service: ", err)
 		return response.APIErrorFromCode(c, statuscode.ServerError)
 	}
-	if res.Status != statuscode.OK {
-		return response.APIErrorFromCode(c, res.Status)
-	}
 	return response.APIOkWithData(c, map[string]interface{}{
 		"id":         res.Id,
 		"email":      res.Email,
@@ -107,5 +103,28 @@ func Register(c *fiber.Ctx) error {
 		return response.APIErrorFromCode(c, statuscode.UnparsableBody)
 	}
 	// TODO: Call User microservice to register user
-	return response.APIOkWithData(c, &body)
+	conn, err := grpc.Dial(config.Api.UserServiceUrl, grpc.WithInsecure())
+	if err != nil {
+		log.Println("ERROR connecting to User microservice: ", err)
+		return response.APIErrorFromCode(c, statuscode.ServiceUnavailable)
+	}
+	defer conn.Close()
+	client := auth.NewAuthServiceClient(conn)
+	res, err := client.Register(context.Background(), &auth.RegisterRequest{
+		FirstName:       body.FirstName,
+		LastName:        body.LastName,
+		Email:           body.Email,
+		Password:        body.Password,
+		ConfirmPassword: body.ConfirmPassword,
+	})
+	if err != nil {
+		log.Println("ERROR: ", err)
+		st, ok := status.FromError(err)
+		if !ok {
+			return response.APIErrorFromCode(c, statuscode.UnknownError)
+		}
+		code, m := statuscode.ParseGrpcErrMsg(st.Message())
+		return response.APIErrorFromCode(c, code, m)
+	}
+	return response.APIOkWithData(c, res)
 }

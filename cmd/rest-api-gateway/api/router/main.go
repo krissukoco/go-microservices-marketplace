@@ -14,6 +14,7 @@ func UseDefault(app *fiber.App) {
 	auth := v1.Group("/auth")
 	auth.Post("/login", handler.Login)
 	auth.Post("/refresh", handler.AuthRefresh)
+	auth.Post("/register", handler.Register)
 
 	// User
 	user := v1.Group("/user")

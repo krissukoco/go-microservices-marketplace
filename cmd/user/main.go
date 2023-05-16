@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 
@@ -11,7 +12,10 @@ import (
 	authPb "github.com/krissukoco/go-microservices-marketplace/proto/auth"
 )
 
-var Server *handler.Server
+var (
+	Server *handler.Server
+	Port   int = 11000
+)
 
 func init() {
 	config.InitializeConfigs()
@@ -28,13 +32,14 @@ func registerServices(server *grpc.Server) {
 }
 
 func main() {
-	l, err := net.Listen("tcp", ":11000")
+	l, err := net.Listen("tcp", fmt.Sprintf(":%d", Port))
 	if err != nil {
-		log.Fatal("ERROR listening to port 11000: ", err)
+		log.Fatalf("ERROR listening to port %d: %v", Port, err)
 	}
 	server := grpc.NewServer()
 	registerServices(server)
 
+	log.Printf("Starting server on port %d", Port)
 	log.Fatal(server.Serve(l))
 
 }
