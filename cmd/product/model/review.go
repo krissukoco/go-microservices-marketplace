@@ -1,6 +1,19 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"errors"
+
+	"gorm.io/gorm"
+)
+
+var (
+	ErrNoRatings = errors.New("no ratings for product")
+)
+
+type reviewSummary struct {
+	Total   int64
+	Average float64
+}
 
 type ProductReviewMedia struct {
 	Id       uint `gorm:"primaryKey"`
@@ -13,16 +26,9 @@ type ProductReview struct {
 	ProductId string
 	UserId    string
 	Comment   string
+	Rating    int
 	CreatedAt int64                 `gorm:"autoCreateTime:milli"`
 	Media     []*ProductReviewMedia `gorm:"foreignKey:ReviewId"`
-}
-
-type ProductRating struct {
-	Id        uint `gorm:"primaryKey"`
-	ProductId string
-	UserId    string
-	Rating    int
-	CreatedAt int64 `gorm:"autoCreateTime:milli"`
 }
 
 func GetProductReviews(db *gorm.DB, productId string) ([]*ProductReview, error) {
@@ -31,8 +37,17 @@ func GetProductReviews(db *gorm.DB, productId string) ([]*ProductReview, error) 
 	return reviews, tx.Error
 }
 
-func GetProductRatings(db *gorm.DB, productId string) ([]*ProductRating, error) {
-	var ratings []*ProductRating
-	tx := db.Where(&ProductRating{ProductId: productId}).Find(&ratings)
-	return ratings, tx.Error
+func GetProductReviewSummary(db *gorm.DB, productId string) (*reviewSummary, error) {
+	var summary reviewSummary
+	tx := db.Model(&ProductReview{}).
+		Where(&ProductReview{ProductId: productId}).
+		Select("COUNT(*) as total, AVG(rating) as average").
+		Scan(&summary)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	if summary.Total == 0 {
+		return nil, ErrNoRatings
+	}
+	return &summary, nil
 }

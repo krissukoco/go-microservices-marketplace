@@ -57,6 +57,6 @@ service AuthService {
     rpc Login (LoginRequest) returns (LoginResponse) {}
     rpc Refresh (RefreshRequest) returns (RefreshResponse) {}
     rpc ChangePassword (ChangePasswordRequest) returns (ChangePasswordResponse) {}
-    rpc Register (RegisterRequest) returns (RegisterResponse) {}
+    rpc RegisterUser (RegisterRequest) returns (RegisterResponse) {}
 }
 

@@ -3,40 +3,95 @@ syntax = "proto3";
 option go_package = "github.com/krissukoco/go-microservices-marketplace/proto/product";
 package product;
 
+message Category {
+    string name = 1;
+    repeated string hierarchy = 2;
+}
+
+message VariantItem {
+    string value = 1;
+    int64 stock = 2;
+    int64 price = 3;
+}
+
+message Variant {
+    string name = 1;
+    repeated VariantItem items = 2;
+}
+
 message Product {
     string id = 1;
-    string userId = 2;
+    string store_id = 2;
     string title = 3;
-    string description = 4;
-    string price = 5;
-    string category = 6;
-    bool second = 7;
-    int64 createdAt = 8;
-    int64 updatedAt = 9;
+    string slug = 4;
+    string description = 5;
+    repeated string tags = 6;
+    Category category = 7;
+    repeated Variant variants = 8;
+    float average_rating = 9;
+    int64 total_review = 10;
+    int64 total_sold = 11;
+    int64 price = 12;
+    int64 stock = 13;
+    int64 total_views = 14;
+    int64 created_at = 15;
+    int64 updated_at = 16;
 }
 
 message ProductId {
     string id = 1;
 }
 
-message NewProduct {
-    string userId = 1;
-    string title = 2;
-    string description = 3;
-    string price = 4;
-    string category = 5;
-    bool second = 6;
+message StoreId {
+    string id = 1;
 }
 
-message NewProductResponse {
-    int64 status = 1;
-    Product Product = 2;
+message NewProduct {
+    string title = 1;
+    string description = 2;
+    int64 price = 3;
+    string category = 4;
+    string tags = 5;
+    repeated Variant variants = 6;
+    int64 stock = 7;
+}
+
+message UpdateRequest {
+    string title = 1;
+    string description = 2;
+    string price = 3;
+    string category = 4;
+    string tags = 5;
+    repeated Variant variants = 6;
+    string id = 7;
+}
+
+message ProductResponse {
+    Product Product = 1;
+}
+
+message ManyProductResponse {
+    repeated Product products = 1;
+}
+
+message GetBySlugRequest {
+    string slug = 1;
+}
+
+message GetByFiltersRequest {
+    string search = 1;
+    string category = 2;
+    int64 page = 3;
+    int64 limit = 4;
 }
 
 service ProductService {
-    rpc Create(NewProduct) returns (NewProductResponse) {}
-    rpc Get(ProductId) returns (Product) {}
-    rpc Update(ProductId) returns (Product) {}
+    rpc Create(NewProduct) returns (ProductResponse) {}
+    rpc GetById(ProductId) returns (Product) {}
+    rpc GetBySlug(GetBySlugRequest) returns (Product) {}
+    rpc GetByStoreId(StoreId) returns (ManyProductResponse) {}
+    rpc GetByFilters(GetByFiltersRequest) returns (ManyProductResponse) {}
+    rpc Update(UpdateRequest) returns (Product) {}
     rpc Delete(ProductId) returns (ProductId) {}
 }
 

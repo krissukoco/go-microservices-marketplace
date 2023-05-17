@@ -19,10 +19,12 @@ type Server struct {
 var _ auth.AuthServiceServer = (*Server)(nil)
 
 func NewServer() (*Server, error) {
+	// Database
 	db, err := database.NewPostgresGorm()
 	if err != nil {
 		return nil, err
 	}
 	database.AutoMigrate(db, &model.User{})
+
 	return &Server{Pg: db, JwtSecret: config.Cfg.JWTSecret}, nil
 }

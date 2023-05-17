@@ -25,6 +25,16 @@ const (
 	ResourceGeneral   int64 = 30000
 	ResourceForbidden int64 = 30003
 	ResourceNotFound  int64 = 30004
+	// --> 31000 - 31999: Product related
+	ProductNotFound           int64 = 31004
+	ProductTitleTooShort      int64 = 31111
+	ProductTitleTooLong       int64 = 31112
+	ProductDescriptionTooLong int64 = 31121
+	ProductCategoryEmpty      int64 = 31131
+	ProductCategoryInvalid    int64 = 31132
+	ProductPriceInvalid       int64 = 31141
+	ProductPriceTooLow        int64 = 31142
+	ProductTagsTooLong        int64 = 31151
 	// 40000 - 49999: Request Validations
 	BadRequest        int64 = 40000
 	PasswordMalformed int64 = 40001

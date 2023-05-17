@@ -110,7 +110,7 @@ func Register(c *fiber.Ctx) error {
 	}
 	defer conn.Close()
 	client := auth.NewAuthServiceClient(conn)
-	res, err := client.Register(context.Background(), &auth.RegisterRequest{
+	res, err := client.RegisterUser(context.Background(), &auth.RegisterRequest{
 		FirstName:       body.FirstName,
 		LastName:        body.LastName,
 		Email:           body.Email,

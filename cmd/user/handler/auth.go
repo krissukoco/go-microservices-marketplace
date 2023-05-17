@@ -38,7 +38,7 @@ func (s *Server) Login(ctx context.Context, in *auth.LoginRequest) (*auth.LoginR
 	}, nil
 }
 
-func (s *Server) Register(ctx context.Context, in *auth.RegisterRequest) (*auth.RegisterResponse, error) {
+func (s *Server) RegisterUser(ctx context.Context, in *auth.RegisterRequest) (*auth.RegisterResponse, error) {
 	var u model.User
 	if err := u.FindByEmail(s.Pg, in.Email); err == nil {
 		return nil, status.Error(codes.FailedPrecondition, statuscode.StandardErrorMessage(statuscode.EmailAlreadyRegistered, "Email is already registered"))
