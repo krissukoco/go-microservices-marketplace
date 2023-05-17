@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 
@@ -9,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
 
+	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/clients"
 	_ "github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/docs"
 
 	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/api/router"
@@ -16,9 +16,8 @@ import (
 )
 
 type Server struct {
-	Api      *fiber.App
-	Port     int
-	Postgres *sql.DB
+	Api  *fiber.App
+	Port int
 }
 
 func (s *Server) ListenAndServe() error {
@@ -42,9 +41,13 @@ func newServer() (*Server, error) {
 	srv := &Server{
 		Port: 8000,
 	}
-
 	config.InitializeConfigs()
-	// database.InitializePostgres()
+
+	// Clients
+	err := clients.SetupAuthClient()
+	if err != nil {
+		return nil, fmt.Errorf("cannot setup auth client: %w", err)
+	}
 
 	// API
 	app := fiber.New()

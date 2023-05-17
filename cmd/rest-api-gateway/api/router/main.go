@@ -23,5 +23,5 @@ func UseDefault(app *fiber.App) {
 
 	// Products
 	products := v1.Group("/products")
-	products.Get("/", handler.GetAllListing)
+	products.Get("/", handler.GetAllProducts)
 }

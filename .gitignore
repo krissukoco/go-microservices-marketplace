@@ -3,3 +3,5 @@
 .env.prod
 .env.test
 .env.local
+# Certificates
+*.pem
