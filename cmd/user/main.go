@@ -41,8 +41,9 @@ func loadTlsCredentials() (credentials.TransportCredentials, error) {
 		return nil, err
 	}
 	cfg := &tls.Config{
-		Certificates: []tls.Certificate{serverCert},
-		ClientAuth:   tls.RequireAndVerifyClientCert,
+		Certificates:       []tls.Certificate{serverCert},
+		ClientAuth:         tls.NoClientCert,
+		InsecureSkipVerify: true,
 	}
 	return credentials.NewTLS(cfg), nil
 }

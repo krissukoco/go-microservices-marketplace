@@ -1,16 +1,14 @@
 package handler
 
 import (
-	"context"
 	"log"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/api/response"
-	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/config"
+	"github.com/krissukoco/go-microservices-marketplace/cmd/rest-api-gateway/clients"
 	"github.com/krissukoco/go-microservices-marketplace/internal/statuscode"
 	"github.com/krissukoco/go-microservices-marketplace/proto/auth"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 )
 
@@ -42,14 +40,7 @@ func Login(c *fiber.Ctx) error {
 		return response.APIErrorFromCode(c, statuscode.UnparsableBody)
 	}
 	// Call User microservice to verify user
-	conn, err := grpc.Dial(config.Api.UserServiceUrl, grpc.WithInsecure())
-	if err != nil {
-		log.Println("ERROR connecting to User microservice: ", err)
-		return response.APIErrorFromCode(c, statuscode.ServiceUnavailable)
-	}
-	defer conn.Close()
-	client := auth.NewAuthServiceClient(conn)
-	res, err := client.Login(context.Background(), &auth.LoginRequest{
+	res, err := clients.Auth.Login(&auth.LoginRequest{
 		Email:    body.Email,
 		Password: body.Password,
 	})
@@ -76,15 +67,7 @@ func AuthRefresh(c *fiber.Ctx) error {
 	}
 	token = split[1]
 	// Call User microservice to verify user
-	conn, err := grpc.Dial(config.Api.UserServiceUrl, grpc.WithInsecure())
-	if err != nil {
-		log.Println("ERROR connecting to User microservice: ", err)
-		return response.APIErrorFromCode(c, statuscode.ServerError)
-	}
-	defer conn.Close()
-
-	client := auth.NewAuthServiceClient(conn)
-	res, err := client.Refresh(context.Background(), &auth.RefreshRequest{Token: token})
+	res, err := clients.Auth.Refresh(&auth.RefreshRequest{Token: token})
 	if err != nil {
 		log.Println("ERROR refresh auth service: ", err)
 		return response.APIErrorFromCode(c, statuscode.ServerError)
@@ -102,21 +85,15 @@ func Register(c *fiber.Ctx) error {
 	if err := c.BodyParser(&body); err != nil {
 		return response.APIErrorFromCode(c, statuscode.UnparsableBody)
 	}
-	// TODO: Call User microservice to register user
-	conn, err := grpc.Dial(config.Api.UserServiceUrl, grpc.WithInsecure())
-	if err != nil {
-		log.Println("ERROR connecting to User microservice: ", err)
-		return response.APIErrorFromCode(c, statuscode.ServiceUnavailable)
-	}
-	defer conn.Close()
-	client := auth.NewAuthServiceClient(conn)
-	res, err := client.RegisterUser(context.Background(), &auth.RegisterRequest{
+	// Call User microservice to register user
+	res, err := clients.Auth.Register(&auth.RegisterRequest{
 		FirstName:       body.FirstName,
 		LastName:        body.LastName,
 		Email:           body.Email,
 		Password:        body.Password,
 		ConfirmPassword: body.ConfirmPassword,
 	})
+
 	if err != nil {
 		log.Println("ERROR: ", err)
 		st, ok := status.FromError(err)

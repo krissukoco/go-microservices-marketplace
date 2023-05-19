@@ -1,1 +1,1 @@
-subjectAltName=DNS:*.krissukoco.dev,DNS:*.krissukoco.com,IP:0.0.0.0
+subjectAltName=DNS:localhost,DNS:*.krissukoco.dev,DNS:*.krissukoco.com,IP:0.0.0.0,IP:127.0.0.1
